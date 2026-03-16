@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Smart Fridge Vibe</title>
+    <title>The Clickable Kitchen</title>
     <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -19,262 +19,210 @@
             flex-direction: column;
             align-items: center;
             font-family: 'Poppins', sans-serif;
-            background: radial-gradient(circle at center, #fff9e6 0%, #ffecd2 100%);
+            background: #fff9e6;
             overflow-x: hidden;
             padding: 20px;
         }
 
-        /* Animated Background Elements */
-        .bg-shape {
+        /* Animated Background Blobs */
+        .blob {
             position: fixed;
-            z-index: -1;
-            filter: blur(50px);
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            filter: blur(80px);
             border-radius: 50%;
-            opacity: 0.5;
-            animation: move 20s infinite alternate;
+            z-index: -1;
+            animation: floatBlob 20s infinite alternate;
         }
 
-        @keyframes move {
-            from { transform: translate(-10%, -10%); }
-            to { transform: translate(10%, 10%); }
+        @keyframes floatBlob {
+            0% { transform: translate(-20%, -20%) scale(1); }
+            100% { transform: translate(20%, 20%) scale(1.2); }
         }
 
-        /* Top Controls */
-        .fridge-panel {
-            background: rgba(255, 255, 255, 0.85);
+        /* Control Panel */
+        .panel {
+            background: rgba(255, 255, 255, 0.9);
             padding: 30px;
-            border-radius: 40px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            backdrop-filter: blur(15px);
+            border-radius: 35px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            backdrop-filter: blur(10px);
             text-align: center;
-            width: 95%;
-            max-width: 550px;
-            z-index: 10;
-            border: 2px solid white;
+            width: 100%;
+            max-width: 500px;
             margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.5);
         }
 
-        h1 { font-family: 'Lobster', cursive; color: var(--primary); font-size: 2.5rem; margin: 0 0 10px 0; }
+        h1 { font-family: 'Lobster', cursive; color: var(--primary); font-size: 2.8rem; margin: 0 0 15px 0; }
 
-        .pantry-note {
-            font-size: 0.8rem;
-            color: #666;
-            background: #f1f2f6;
-            padding: 5px 15px;
-            border-radius: 20px;
-            display: inline-block;
-            margin-bottom: 15px;
-        }
+        .input-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
 
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        input[type="text"] {
+        input {
             padding: 12px 20px;
             border-radius: 15px;
-            border: 2px solid #dfe4ea;
-            font-family: inherit;
+            border: 2px solid #eee;
             outline: none;
-            transition: border-color 0.3s;
+            font-family: inherit;
         }
 
-        input[type="text"]:focus { border-color: var(--secondary); }
-
-        .type-selector {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .chip {
-            padding: 8px 18px;
-            border-radius: 20px;
-            background: white;
-            border: 2px solid #dfe4ea;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        input[type="radio"] { display: none; }
-        input[type="radio"]:checked + .chip {
-            background: var(--secondary);
-            color: white;
-            border-color: var(--secondary);
-        }
+        input:focus { border-color: var(--primary); }
 
         .swirly-btn {
             font-family: 'Lobster', cursive;
             background: var(--primary);
             color: white;
             border: none;
-            padding: 15px 45px;
+            padding: 12px 40px;
             font-size: 1.8rem;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.3);
-            transition: 0.3s;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 15px rgba(255, 71, 87, 0.2);
         }
 
-        .swirly-btn:hover { transform: translateY(-3px) scale(1.02); background: #ff6b81; }
+        .swirly-btn:hover { transform: scale(1.05) rotate(-1deg); background: #ff6b81; }
 
-        /* Results Card */
-        #recipe-result {
+        /* Clickable Recipe Card */
+        #recipe-link {
+            text-decoration: none;
+            color: inherit;
             display: none;
-            background: white;
-            width: 95%;
-            max-width: 600px;
-            border-radius: 35px;
-            overflow: hidden;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
-            animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin-bottom: 50px;
+            width: 100%;
+            max-width: 550px;
+            transition: transform 0.3s ease;
         }
 
-        #recipe-result img { width: 100%; height: 300px; object-fit: cover; }
-        
-        .recipe-content { padding: 30px; text-align: center; }
-        .recipe-content h2 { font-family: 'Lobster', cursive; margin: 0; color: var(--dark); }
+        #recipe-link:hover { transform: translateY(-10px); }
 
-        .emoji-float {
+        #recipe-card {
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        #recipe-card img { width: 100%; height: 320px; object-fit: cover; }
+
+        .card-body { padding: 25px; text-align: center; }
+
+        .badge {
+            display: inline-block;
+            background: #f1f2f6;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            color: #57606f;
+        }
+
+        .click-hint {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 15px;
+        }
+
+        .food-emoji {
             position: fixed;
+            z-index: -1;
             pointer-events: none;
-            z-index: 1;
-            font-size: 1.5rem;
-            animation: fall 8s linear infinite;
+            animation: fall 10s linear infinite;
         }
 
         @keyframes fall {
             0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.8; }
-            90% { opacity: 0.8; }
-            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-        }
-
-        @keyframes popUp {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-    <div class="bg-shape" style="width: 300px; height: 300px; background: #ffcc33; top: 10%; left: -5%;"></div>
-    <div class="bg-shape" style="width: 400px; height: 400px; background: #ff6b6b; bottom: -10%; right: -5%;"></div>
+    <div class="blob"></div>
 
-    <div class="fridge-panel">
-        <h1>Smart Fridge</h1>
-        <div class="pantry-note">We'll assume you have: Salt, Oil, Water, Pepper & Flour</div>
-        
-        <div class="input-group">
-            <input type="text" id="ing1" placeholder="Main Ingredient (e.g. Beef)">
-            <input type="text" id="ing2" placeholder="Secondary (e.g. Potato)">
-            <input type="text" id="ing3" placeholder="Vibe Adder (e.g. Lemon)">
+    <div class="panel">
+        <h1>Fridge Vibe</h1>
+        <div class="input-stack">
+            <input type="text" id="ing-input" placeholder="What's your main ingredient?">
         </div>
-
-        <div class="type-selector">
-            <label><input type="radio" name="vibe" value="" checked><span class="chip">Anything</span></label>
-            <label><input type="radio" name="vibe" value="Dessert"><span class="chip">Dessert</span></label>
-            <label><input type="radio" name="vibe" value="Side"><span class="chip">Side</span></label>
-            <label><input type="radio" name="vibe" value="Breakfast"><span class="chip">Breakfast</span></label>
-        </div>
-
-        <button class="swirly-btn" onclick="generateRecipe()">Mix the Vibe</button>
+        <button class="swirly-btn" onclick="getRecipe()">Get Cooking</button>
     </div>
 
-    <div id="recipe-result">
-        <img id="meal-img" src="" alt="Tasty Food">
-        <div class="recipe-content">
-            <h2 id="meal-name">Recipe Title</h2>
-            <p id="meal-tags" style="color: var(--secondary); font-weight: bold; margin-top: 5px;"></p>
-            <p id="meal-steps" style="color: #57606f; line-height: 1.6;"></p>
-            <button class="swirly-btn" style="font-size: 1.2rem; padding: 10px 30px;" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">Try New Ingredients</button>
+    <a id="recipe-link" target="_blank" rel="noopener noreferrer">
+        <div id="recipe-card">
+            <img id="meal-img" src="" alt="Recipe">
+            <div class="card-body">
+                <div class="badge" id="meal-cat">Category</div>
+                <h2 id="meal-name" style="font-family: 'Lobster', cursive; margin: 0; font-size: 2rem;"></h2>
+                <p id="meal-preview" style="font-size: 0.95rem; color: #555; margin-top: 10px;"></p>
+                <div class="click-hint">✨ Click to view full recipe website ✨</div>
+            </div>
         </div>
-    </div>
+    </a>
 
     <script>
-        const emojis = ['🥦', '🍖', '🥚', '🧀', '🍄', '🍗', '🍤', '🍝'];
-        
-        function createConfetti() {
-            const e = document.createElement('div');
-            e.className = 'emoji-float';
-            e.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-            e.style.left = Math.random() * 100 + 'vw';
-            e.style.animationDuration = (Math.random() * 3 + 5) + 's';
-            document.body.appendChild(e);
-            setTimeout(() => e.remove(), 8000);
+        // Background Food Confetti
+        const food = ['🍔','🍕','🌮','🍜','🥗','🥐','🥑','🍩'];
+        function spawnFood() {
+            const f = document.createElement('div');
+            f.className = 'food-emoji';
+            f.innerText = food[Math.floor(Math.random() * food.length)];
+            f.style.left = Math.random() * 100 + 'vw';
+            f.style.fontSize = Math.random() * 20 + 20 + 'px';
+            f.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            document.body.appendChild(f);
+            setTimeout(() => f.remove(), 10000);
         }
-        setInterval(createConfetti, 700);
+        setInterval(spawnFood, 800);
 
-        async function generateRecipe() {
+        async function getRecipe() {
+            const input = document.getElementById('ing-input').value.trim();
             const btn = document.querySelector('.swirly-btn');
-            const result = document.getElementById('recipe-result');
+            const link = document.getElementById('recipe-link');
             
-            // Get values
-            const ingredients = [
-                document.getElementById('ing1').value.trim(),
-                document.getElementById('ing2').value.trim(),
-                document.getElementById('ing3').value.trim()
-            ].filter(x => x !== "");
+            btn.innerText = "Whisking...";
 
-            const vibe = document.querySelector('input[name="vibe"]:checked').value;
+            let url = 'https://www.themealdb.com/api/json/v1/1/random.php';
+            if(input) url = `https://www.themealdb.com/api/json/v1/1/filter.php?i=${input}`;
 
-            btn.innerText = "Cooking...";
-            
             try {
-                let meal = null;
+                const res = await fetch(url);
+                const data = await res.json();
 
-                // Priority 1: Search by the first ingredient if provided
-                if (ingredients.length > 0) {
-                    const res = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredients[0]}`);
-                    const data = await res.json();
-                    if (data.meals) {
-                        meal = data.meals[Math.floor(Math.random() * data.meals.length)];
-                    }
-                } 
-                
-                // Priority 2: If no ingredients or search failed, search by category (vibe)
-                if (!meal && vibe) {
-                    const res = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${vibe}`);
-                    const data = await res.json();
-                    if (data.meals) {
-                        meal = data.meals[Math.floor(Math.random() * data.meals.length)];
-                    }
+                if(!data.meals) {
+                    alert("No matches! Try a basic ingredient like 'Chicken' or 'Eggs'.");
+                    btn.innerText = "Get Cooking";
+                    return;
                 }
 
-                // Final Fallback: Random
-                if (!meal) {
-                    const res = await fetch(`https://www.themealdb.com/api/json/v1/1/random.php`);
-                    const data = await res.json();
-                    meal = data.meals[0];
-                }
-
-                // Get full details
+                // Randomly pick one if filtered, then get details
+                let meal = data.meals[Math.floor(Math.random() * data.meals.length)];
                 const detailRes = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${meal.idMeal}`);
                 const detailData = await detailRes.json();
                 const fullMeal = detailData.meals[0];
 
-                // Update UI
+                // Update Content
                 document.getElementById('meal-img').src = fullMeal.strMealThumb;
                 document.getElementById('meal-name').innerText = fullMeal.strMeal;
-                document.getElementById('meal-tags').innerText = `#${fullMeal.strCategory} #${fullMeal.strArea}`;
-                
-                // Show first few steps
-                const steps = fullMeal.strInstructions.split('.').slice(0, 3).join('.') + '...';
-                document.getElementById('meal-steps').innerText = steps;
+                document.getElementById('meal-cat').innerText = fullMeal.strArea + " " + fullMeal.strCategory;
+                document.getElementById('meal-preview').innerText = fullMeal.strInstructions.substring(0, 150) + "...";
 
-                result.style.display = 'block';
-                result.scrollIntoView({ behavior: 'smooth' });
-                btn.innerText = "Mix Again";
+                // Set Click Action (Use strSource or fallback to Google Search)
+                const sourceUrl = fullMeal.strSource || `https://www.google.com/search?q=${encodeURIComponent(fullMeal.strMeal + " recipe")}`;
+                link.href = sourceUrl;
+
+                // Show Card
+                link.style.display = 'block';
+                link.scrollIntoView({ behavior: 'smooth' });
+                btn.innerText = "Find Another";
 
             } catch (err) {
-                btn.innerText = "Oops! Try again";
                 console.error(err);
+                btn.innerText = "Error! Try Again";
             }
         }
     </script>
