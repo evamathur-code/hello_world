@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibe Checker</title>
+    <title>Vibe Checker Pro</title>
     <style>
-        /* Modern Reset & Centering */
+        :root {
+            --transition-speed: 0.6s;
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -14,26 +17,29 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            transition: background-color 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            transition: background-color var(--transition-speed) ease;
             background-color: #f0f2f5;
-            overflow: hidden;
+            overflow: hidden; /* Prevents scrollbars from floating emojis */
+            position: relative;
         }
 
         /* Large Vibe Text */
         #vibe-display {
-            font-size: 5rem;
+            font-size: clamp(3rem, 10vw, 5rem);
             font-weight: 800;
             margin-bottom: 2rem;
             color: #1a1a1a;
             text-transform: uppercase;
             letter-spacing: -2px;
             text-align: center;
+            z-index: 10; /* Keeps text above emojis */
+            pointer-events: none;
         }
 
-        /* Modern Button Styling */
+        /* Modern Button */
         .vibe-button {
-            padding: 16px 32px;
+            padding: 16px 36px;
             font-size: 1.1rem;
             font-weight: 600;
             color: white;
@@ -43,22 +49,38 @@
             cursor: pointer;
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s, background 0.3s, box-shadow 0.3s;
+            transition: transform 0.2s, background 0.3s;
+            z-index: 10;
         }
 
         .vibe-button:hover {
-            transform: translateY(-3px);
-            background: rgba(0, 0, 0, 1);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px) scale(1.05);
+            background: #000;
         }
 
-        .vibe-button:active {
-            transform: translateY(0);
+        /* Emoji Styling */
+        .emoji {
+            position: absolute;
+            bottom: -50px;
+            font-size: 2rem;
+            user-select: none;
+            pointer-events: none;
+            z-index: 1;
+            animation: floatUp 4s linear forwards;
+            opacity: 0.7;
         }
 
-        /* Responsive scaling for mobile */
-        @media (max-width: 600px) {
-            #vibe-display { font-size: 3rem; }
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% {
+                transform: translateY(-110vh) rotate(360deg);
+                opacity: 0;
+            }
         }
     </style>
 </head>
@@ -69,34 +91,50 @@
 
     <script>
         const vibes = [
-            "Chill Mode",
-            "Party Time",
-            "Focus On",
-            "Golden Hour",
-            "Midnight City",
-            "Electric Soul",
-            "Deep Work",
-            "Neon Dreams"
+            { name: "Chill Mode", emojis: ["🌊", "🍃", "☁️", "🧘", "🍵"], colorRange: [180, 240] },
+            { name: "Party Time", emojis: ["🎉", "💃", "✨", "🕺", "🍹"], colorRange: [300, 340] },
+            { name: "Focus On", emojis: ["🎯", "💻", "🧠", "📚", "⚡"], colorRange: [20, 50] },
+            { name: "Golden Hour", emojis: ["🌅", "🌻", "🧡", "🍯", "🥂"], colorRange: [30, 45] },
+            { name: "Midnight City", emojis: ["🌃", "🌙", "🚕", "🏢", "🌌"], colorRange: [260, 280] },
+            { name: "Electric Soul", emojis: ["⚡", "🎸", "🔥", "🌈", "👾"], colorRange: [280, 320] }
         ];
 
-        function getRandomColor() {
-            // Generating vibrant but readable colors
-            const h = Math.floor(Math.random() * 360);
-            const s = 60 + Math.random() * 20; // 60-80% saturation
-            const l = 70 + Math.random() * 15; // 70-85% lightness for pastel/bright look
-            return `hsl(${h}, ${s}%, ${l}%)`;
+        function getRandomColor(hRange) {
+            const h = Math.floor(Math.random() * (hRange[1] - hRange[0])) + hRange[0];
+            return `hsl(${h}, 70%, 80%)`;
+        }
+
+        function createEmoji(emojiList) {
+            const emojiEl = document.createElement('div');
+            emojiEl.className = 'emoji';
+            emojiEl.innerText = emojiList[Math.floor(Math.random() * emojiList.length)];
+            
+            // Random horizontal position
+            emojiEl.style.left = Math.random() * 100 + 'vw';
+            // Random size
+            emojiEl.style.fontSize = (Math.random() * 2 + 1) + 'rem';
+            // Random animation duration
+            emojiEl.style.animationDuration = (Math.random() * 2 + 3) + 's';
+            
+            document.body.appendChild(emojiEl);
+
+            // Clean up the DOM after animation finishes
+            setTimeout(() => {
+                emojiEl.remove();
+            }, 5000);
         }
 
         function changeVibe() {
             const display = document.getElementById('vibe-display');
-            const body = document.body;
-
-            // Pick a random vibe from the array
-            const randomVibe = vibes[Math.floor(Math.random() * vibes.length)];
+            const vibe = vibes[Math.floor(Math.random() * vibes.length)];
             
-            // Apply changes
-            display.innerText = randomVibe;
-            body.style.backgroundColor = getRandomColor();
+            display.innerText = vibe.name;
+            document.body.style.backgroundColor = getRandomColor(vibe.colorRange);
+
+            // Spawn a burst of emojis
+            for(let i = 0; i < 15; i++) {
+                setTimeout(() => createEmoji(vibe.emojis), i * 100);
+            }
         }
     </script>
 </body>
